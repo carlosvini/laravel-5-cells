@@ -20,11 +20,12 @@ class CellsServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		// Autoload for cell factory.
+		ClassLoader::register();
 		ClassLoader::addDirectories(array(
 			app_path().'/cells'
 		));
 
-		$this->package('torann/cells');
+		//$this->package('torann/cells');
 
 		// Temp to use in closure.
 		$app = $this->app;
