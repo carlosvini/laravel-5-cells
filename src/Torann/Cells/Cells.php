@@ -29,8 +29,6 @@ class Cells {
 	{
 		$this->view 			= $view;
 		$this->caching_disabled = $caching_disabled;
-
-		$this->view->addLocation(app_path()."/cells");
 	}
 
 	/**

@@ -2,6 +2,8 @@
 
 use Illuminate\Support\ClassLoader;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\FileViewFinder;
+use Illuminate\View\Factory;
 
 class CellsServiceProvider extends ServiceProvider {
 
@@ -22,7 +24,7 @@ class CellsServiceProvider extends ServiceProvider {
 		// Autoload for cell factory.
 		ClassLoader::register();
 		ClassLoader::addDirectories(array(
-			app_path().'/cells'
+			app_path().'/Cells'
 		));
 
 		//$this->package('torann/cells');
@@ -64,10 +66,15 @@ class CellsServiceProvider extends ServiceProvider {
 	 */
 	public function registerCells()
 	{
-		$this->app['cells'] = $this->app->share(function($app)
-		{
-			$caching_disabled = $app->environment() === 'local' && $app['config']['cells::disable_cache_in_dev'];
-			return new Cells($app['view'], $caching_disabled);
+        $this->app->singleton('cells.view', function ($app) {
+            $resolver = $app['view.engine.resolver'];
+            $finder = new FileViewFinder($app['files'], config('cells.paths'));
+            return new Factory($resolver, $finder, $app['events']);
+        });
+        
+        $this->app['cells'] = $this->app->share(function ($app) {
+            $caching_disabled = $app->environment() === 'local' && config('cells.disable_cache_in_dev');
+            return new Cells($app['cells.view'], $caching_disabled);
 		});
 	}
 
