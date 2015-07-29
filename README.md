@@ -1,8 +1,8 @@
-# Cells for Laravel 4 - Beta
+# Cells for Laravel 5 - Beta
 
 [![Latest Stable Version](https://poser.pugx.org/torann/cells/v/stable.png)](https://packagist.org/packages/torann/cells) [![Total Downloads](https://poser.pugx.org/torann/cells/downloads.png)](https://packagist.org/packages/torann/cells)
 
-Cells are view components for Laravel 4. They are mini-controllers with their own MVC stack, can invoke logic and render views.
+Cells are view components for Laravel 5. They are mini-controllers with their own MVC stack, can invoke logic and render views.
 
 ----------
 
@@ -13,7 +13,15 @@ Cells are view components for Laravel 4. They are mini-controllers with their ow
 To get the latest version of Cells simply require it in your `composer.json` file.
 
 ~~~
-"torann/cells": "dev-master"
+ "repositories" : [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jp7carlos/laravel-5-cells"
+        }
+],
+"require": {
+    "jp7carlos/laravel-5-cells": "dev-master"
+}
 ~~~
 
 You'll then need to run `composer install` to download it and have the autoloader updated.
