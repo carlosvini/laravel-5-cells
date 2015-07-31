@@ -2,6 +2,8 @@
 
 use ReflectionClass;
 use Illuminate\View\Factory;
+use Exception;
+use Log;
 
 class Cells {
 
@@ -42,32 +44,41 @@ class Cells {
 	public function get($className, $action = 'display', $attributes = array())
 	{
 		static $cells = array();
+        
+        try {
+    		// If the class name is not lead with upper case add prefix "Cell".
+    		if ( ! preg_match('|^[A-Z]|', $className))
+    		{
+    			$className = 'Cell'.ucfirst($className);
+    		}
 
-		// If the class name is not lead with upper case add prefix "Cell".
-		if ( ! preg_match('|^[A-Z]|', $className))
-		{
-			$className = 'Cell'.ucfirst($className);
-		}
+    		if ( ! $instance = array_get($cells, $className))
+    		{
+    			$reflector = new ReflectionClass($className);
 
-		if ( ! $instance = array_get($cells, $className))
-		{
-			$reflector = new ReflectionClass($className);
+    			if ( ! $reflector->isInstantiable())
+    			{
+    				throw new UnknownCellClassException("Cell target [$className] is not instantiable.");
+    			}
 
-			if ( ! $reflector->isInstantiable())
-			{
-				throw new UnknownCellClassException("Cell target [$className] is not instantiable.");
-			}
+    			$instance = $reflector->newInstance($this->view, $this->caching_disabled);
 
-			$instance = $reflector->newInstance($this->view, $this->caching_disabled);
+    			array_set($cells, $className, $instance);
+    		}
 
-			array_set($cells, $className, $instance);
-		}
+    		$instance->setAttributes($attributes);
 
-		$instance->setAttributes($attributes);
+    		$instance->initCell( $action );
 
-		$instance->initCell( $action );
-
-		return $instance->displayView();
-	}
-
+    		return $instance->displayView();
+        
+        } catch (Exception $e) {
+            if (!config('app.debug') && config('cells.catch_exceptions')) {
+                Log::error($e);
+                
+                return trans('cells.exception') . func_get_arg(0);
+            }
+            throw $e;
+        }
+    }
 }
