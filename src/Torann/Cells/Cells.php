@@ -43,28 +43,22 @@ class Cells {
 	 */
 	public function get($className, $action = 'display', $attributes = array())
 	{
-		static $cells = array();
-        
+		
         try {
     		// If the class name is not lead with upper case add prefix "Cell".
     		if ( ! preg_match('|^[A-Z]|', $className))
     		{
     			$className = 'Cell'.ucfirst($className);
     		}
+    		
+			$reflector = new ReflectionClass($className);
 
-    		if ( ! $instance = array_get($cells, $className))
-    		{
-    			$reflector = new ReflectionClass($className);
+			if ( ! $reflector->isInstantiable())
+			{
+				throw new UnknownCellClassException("Cell target [$className] is not instantiable.");
+			}
 
-    			if ( ! $reflector->isInstantiable())
-    			{
-    				throw new UnknownCellClassException("Cell target [$className] is not instantiable.");
-    			}
-
-    			$instance = $reflector->newInstance($this->view, $this->caching_disabled);
-
-    			array_set($cells, $className, $instance);
-    		}
+			$instance = $reflector->newInstance($this->view, $this->caching_disabled);
 
     		$instance->setAttributes($attributes);
 
