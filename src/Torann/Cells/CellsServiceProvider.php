@@ -22,10 +22,10 @@ class CellsServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		// Autoload for cell factory.
-		ClassLoader::register();
-		ClassLoader::addDirectories(array(
-			app_path().'/Cells'
-		));
+//		ClassLoader::register();
+//		ClassLoader::addDirectories(array(
+//			app_path().'/Cells'
+//		));
 
 		//$this->package('torann/cells');
 
@@ -71,8 +71,8 @@ class CellsServiceProvider extends ServiceProvider {
             $finder = new FileViewFinder($app['files'], config('cells.paths'));
             return new Factory($resolver, $finder, $app['events']);
         });
-        
-        $this->app['cells'] = $this->app->share(function ($app) {
+
+        $this->app->singleton('cells', function ($app) {
             $caching_disabled = $app->environment() === 'local' && config('cells.disable_cache_in_dev');
             return new Cells($app['cells.view'], $caching_disabled);
 		});
@@ -85,7 +85,7 @@ class CellsServiceProvider extends ServiceProvider {
 	 */
 	public function registerCellsGenerator()
 	{
-		$this->app['cells.create'] = $this->app->share(function($app)
+		$this->app->singleton('cells.create', function($app)
 		{
 			return new Commands\CellsGeneratorCommand($app['config'], $app['files']);
 		});
