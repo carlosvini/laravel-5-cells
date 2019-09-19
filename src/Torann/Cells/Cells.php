@@ -48,7 +48,7 @@ class Cells {
     		// If the class name is not lead with upper case add prefix "Cell".
     		if ( ! preg_match('|^[A-Z]|', $className))
     		{
-    			$className = 'Cell'.ucfirst($className);
+    			$className = config('cells.namespace').'Cell'.ucfirst($className);
     		}
     		
 			$reflector = new ReflectionClass($className);

@@ -16,4 +16,6 @@ return array(
     'paths' => [
         realpath(base_path('resources/cells'))
     ],
+    
+    'namespace' => '',
 );
